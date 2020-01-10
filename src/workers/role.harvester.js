@@ -60,9 +60,6 @@ var roleHarvester = {
             //     }
             // }
 
-            if (creep.store.getFreeCapacity() == 0) {
-                refuel_flag = false;
-            }
         }
         else { // DELIVER ENERGY TO CONTAINERS
             var containers = creep.room.find(FIND_STRUCTURES, {
@@ -93,10 +90,6 @@ var roleHarvester = {
                         }
                     }    
                 }
-            }
-
-            if (creep.store.getUsedCapacity() == 0) {
-                refuel_flag = true;
             }
         }
 	}

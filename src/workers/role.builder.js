@@ -3,6 +3,15 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
 
+        const builder_parking = [
+            [11, 28], [12, 28],
+            [11, 29], [12, 29],
+            [11, 30], [12, 30],
+            [11, 31], [12, 31]
+        ]
+
+        var current_pos = [creep.pos.x, creep.pos.y];
+
 	    if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.say('🔄 harvest');
@@ -41,6 +50,19 @@ var roleBuilder = {
 					creep.moveTo(Game.getObjectById(creep.memory.repair_structID), {visualizePathStyle: {stroke: '#ffffff'}});
 				}	
 			}
+            else {
+                // park in designated area
+                // console.log(harvester_parking.includes(current_pos));
+                if (!(builder_parking.includes(current_pos))) {
+                    for (let i = 0; i < builder_parking.length; i++) {
+                        const parking_space = creep.room.lookForAt(LOOK_CREEPS, builder_parking[i][0], builder_parking[i][1]);
+                        if (parking_space.length == 0) {
+                            creep.moveTo(builder_parking[i][0], builder_parking[i][1], {visualizePathStyle: {stroke: '#ffffff'}})
+                            break;
+                        }
+                    }    
+                }
+            }
 	    }
 	    else {
 	        var sources = creep.room.find(FIND_SOURCES);
