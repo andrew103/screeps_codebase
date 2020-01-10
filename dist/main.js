@@ -1,10 +1,10 @@
-var roleHarvester = require('role.harvester');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
-var roleDefender = require("role.defender");
-var roleRangedDefender = require("role.ranged_defender");
-var roleHealer = require("role.healer");
-// var roleEnergyCourier = require("role.energy_courier");
+var roleHarvester = require('workers_role.harvester');
+var roleUpgrader = require('workers_role.upgrader');
+var roleBuilder = require('workers_role.builder');
+var roleDefender = require("defenders_role.defender");
+var roleRangedDefender = require("defenders_role.ranged_defender");
+var roleHealer = require("defenders_role.healer");
+var roleEnergyCourier = require("couriers_role.energy_courier");
 
 module.exports.loop = function () {
 

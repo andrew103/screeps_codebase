@@ -28,7 +28,7 @@ var roleBuilder = {
 			if (!creep.memory.repairing && repair_targets[0].hits < 2000) {
 				creep.memory.repairing = true;
 				creep.memory.repair_structID = repair_targets[0].id;
-				creep.say('repairing');
+				creep.say('repairing 1');
 			}
 
 			if(build_targets.length && !creep.memory.repairing) {
