@@ -3,18 +3,24 @@ var roleEnergyCourier = {
     /** @param {Creep} creep **/
     run: function(creep) {
 
-        const harvester_parking = [
-            [11, 28],
-            [11, 29],
-            [12, 28],
-            [12, 29],
+        const courier_parking = [
+            [17,37],
+            [17,38],
+            [17,39]
         ]
 
         var current_pos = [creep.pos.x, creep.pos.y];
-        var refuel_flag;
 
+        if (creep.memory.refueling && creep.store.getFreeCapacity() == 0) {
+            creep.memory.refueling = false;
+            creep.say("delivering");
+        }
+        if (!creep.memory.refueling && creep.store.getUsedCapacity() == 0) {
+            creep.memory.refueling = true;
+            creep.say("refueling");
+        }
 
-	    if (creep.store.getFreeCapacity() > 0) {
+	    if (creep.memory.refueling) { // RETRIEVE ENERGY FROM CONTAINERS OR DROPPED ENERGY
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) != 0;
@@ -25,17 +31,11 @@ var roleEnergyCourier = {
             if (creep.pickup(dropped[0]) == ERR_NOT_IN_RANGE && dropped[0].amount > 300) {
                 creep.moveTo(dropped[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
-            else if (targets.length > 0) {
-                if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-
-            if (creep.store.getFreeCapacity() == 0) {
-                refuel_flag = false;
+            else if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         }
-        else {
+        else { // DELIVER ENERGY TO SPAWN OR EXTENSIONS
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
@@ -53,19 +53,15 @@ var roleEnergyCourier = {
             else {
                 // park in designated area
                 // console.log(harvester_parking.includes(current_pos));
-                if (!(harvester_parking.includes(current_pos))) {
-                    for (let i = 0; i < harvester_parking.length; i++) {
-                        const parking_space = creep.room.lookForAt(LOOK_CREEPS, harvester_parking[i][0], harvester_parking[i][1]);
+                if (!(courier_parking.includes(current_pos))) {
+                    for (let i = 0; i < courier_parking.length; i++) {
+                        const parking_space = creep.room.lookForAt(LOOK_CREEPS, courier_parking[i][0], courier_parking[i][1]);
                         if (parking_space.length == 0) {
-                            creep.moveTo(harvester_parking[i][0], harvester_parking[i][1], {visualizePathStyle: {stroke: '#ffffff'}})
+                            creep.moveTo(courier_parking[i][0], courier_parking[i][1], {visualizePathStyle: {stroke: '#ffffff'}})
                             break;
                         }
                     }    
                 }
-            }
-
-            if (creep.store.getUsedCapacity() == 0) {
-                refuel_flag = true;
             }
         }
 	}

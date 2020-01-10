@@ -20,12 +20,12 @@ var roleBuilder = {
 			repair_targets.sort((a,b) => a.hits - b.hits);
 
 			if (creep.memory.repairing && creep.memory.repair_structID) {
-				if (Game.getObjectById(creep.memory.repair_structID).hits > 5000) {
+				if (Game.getObjectById(creep.memory.repair_structID).hits > Game.getObjectById(creep.memory.repair_structID).hitsMax/4) {
 					creep.memory.repairing = false;
 					creep.say('stop repairing');	
 				}
 			}
-			if (!creep.memory.repairing && repair_targets[0].hits < 2000) {
+			if (!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) {
 				creep.memory.repairing = true;
 				creep.memory.repair_structID = repair_targets[0].id;
 				creep.say('repairing 1');
@@ -44,7 +44,15 @@ var roleBuilder = {
 	    }
 	    else {
 	        var sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
+            var containers = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) != 0;
+                }
+            });
+			if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+				creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+			}
+			else if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
 	    }
