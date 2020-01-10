@@ -1,5 +1,14 @@
 var roleHarvester = {
 
+    /** @param {Array} parking_spots
+     *  @param {Array} current_pos
+     */
+    // isParked: function(parking_spots, current_pos) {
+    //     for (let i = 0; i < parking_spots.length; i++) {
+
+    //     }
+    // },
+
     /** @param {Creep} creep **/
     run: function(creep) {
 
@@ -11,7 +20,6 @@ var roleHarvester = {
         ]
 
         var current_pos = [creep.pos.x, creep.pos.y];
-        var refuel_flag;
 
         var targets = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
