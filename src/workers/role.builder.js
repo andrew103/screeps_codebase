@@ -34,7 +34,7 @@ var roleBuilder = {
 					creep.say('stop repairing');	
 				}
 			}
-			if (!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) {
+			if ((!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) || !build_targets.length) {
 				creep.memory.repairing = true;
 				creep.memory.repair_structID = repair_targets[0].id;
 				creep.say('repairing 1');
@@ -65,17 +65,38 @@ var roleBuilder = {
             }
 	    }
 	    else {
-	        var sources = creep.room.find(FIND_SOURCES);
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) != 0;
                 }
-            });
-			if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+			});
+			var container_tot_energy = 0;
+			var spawn_energy_space = creep.room.find(FIND_STRUCTURES, {
+				filter: (structure) => {
+					return (structure.structureType == STRUCTURE_SPAWN ||
+							structure.structureType == STRUCTURE_EXTENSION) &&
+							structure.store.getFreeCapacity() > 0
+				}
+			})
+			for (let i = 0; i < containers.length; i++) {
+				container_tot_energy += containers[i].store.getUsedCapacity(RESOURCE_ENERGY);
+			}
+
+			if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE && (container_tot_energy > 1000 || spawn_energy_space.length == 0)) {
 				creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
 			}
-			else if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+            else {
+                // park in designated area
+                // console.log(harvester_parking.includes(current_pos));
+                if (!(builder_parking.includes(current_pos))) {
+                    for (let i = 0; i < builder_parking.length; i++) {
+                        const parking_space = creep.room.lookForAt(LOOK_CREEPS, builder_parking[i][0], builder_parking[i][1]);
+                        if (parking_space.length == 0) {
+                            creep.moveTo(builder_parking[i][0], builder_parking[i][1], {visualizePathStyle: {stroke: '#ffffff'}})
+                            break;
+                        }
+                    }    
+                }
             }
 	    }
 	}
