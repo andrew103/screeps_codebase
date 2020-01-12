@@ -34,22 +34,19 @@ var roleBuilder = {
 					creep.say('stop repairing');	
 				}
 			}
-			if (!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) {
+			if ((!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) || !build_targets.length) {
 				creep.memory.repairing = true;
 				creep.memory.repair_structID = repair_targets[0].id;
 				creep.say('repairing 1');
 			}
 
 			if(build_targets.length && !creep.memory.repairing) {
-				console.log(1);
                 if(creep.build(build_targets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(build_targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
 			}
 			else if (repair_targets.length) {
-				console.log(2);
 				if(creep.repair(Game.getObjectById(creep.memory.repair_structID)) == ERR_NOT_IN_RANGE) {
-					console.log(3);
 					creep.moveTo(Game.getObjectById(creep.memory.repair_structID), {visualizePathStyle: {stroke: '#ffffff'}});
 				}	
 			}
@@ -84,7 +81,6 @@ var roleBuilder = {
 			for (let i = 0; i < containers.length; i++) {
 				container_tot_energy += containers[i].store.getUsedCapacity(RESOURCE_ENERGY);
 			}
-			console.log(container_tot_energy);
 
 			if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE && (container_tot_energy > 1000 || spawn_energy_space.length == 0)) {
 				creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
