@@ -74,10 +74,11 @@ var roleBuilder = {
 			var spawn_energy_space = creep.room.find(FIND_STRUCTURES, {
 				filter: (structure) => {
 					return (structure.structureType == STRUCTURE_SPAWN ||
-							structure.structureType == STRUCTURE_EXTENSION) &&
-							structure.store.getFreeCapacity() > 0
+							structure.structureType == STRUCTURE_EXTENSION ||
+							structure.structureType == STRUCTURE_TOWER) &&
+							structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
 				}
-			})
+			});
 			for (let i = 0; i < containers.length; i++) {
 				container_tot_energy += containers[i].store.getUsedCapacity(RESOURCE_ENERGY);
 			}

@@ -58,20 +58,31 @@ module.exports.loop = function () {
             {align: 'left', opacity: 0.8});
     }
 
-    // var tower = Game.getObjectById('5e18ffbd101cfe1899cf91ad');
-    // if(tower) {
-    //     var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-    //         filter: (structure) => structure.hits < structure.hitsMax
-    //     });
-    //     if(closestDamagedStructure) {
-    //         tower.repair(closestDamagedStructure);
-    //     }
+    var tower = Game.getObjectById('5e18ffbd101cfe1899cf91ad');
+    if(tower) {
+        var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (structure) => structure.hits < structure.hitsMax &&
+                                    (structure.structureType == STRUCTURE_CONTAINER)
+        });
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-    //     var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    //     if(closestHostile) {
-    //         tower.attack(closestHostile);
-    //     }
-    // }
+        // var containers = creep.room.find(FIND_STRUCTURES, {
+        //     filter: (structure) => {
+        //         return structure.structureType == STRUCTURE_CONTAINER;
+        //     }
+        // });
+        // var container_tot_energy = 0;
+        // for (let i = 0; i < containers.length; i++) {
+        //     container_tot_energy += containers[i].store.getUsedCapacity(RESOURCE_ENERGY);
+        // }
+
+        if(closestHostile) {
+            tower.attack(closestHostile);
+        }
+        else if(closestDamagedStructure) { // && container_tot_energy > 2000
+            tower.repair(closestDamagedStructure);
+        }
+    }
 
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
