@@ -24,9 +24,9 @@ var roleBuilder = {
 	    if (creep.memory.building) {
 			var build_targets = creep.room.find(FIND_CONSTRUCTION_SITES);
 			var repair_targets = creep.room.find(FIND_STRUCTURES, {
-				filter: object => object.hits < object.hitsMax
+				filter: object => object.hits < object.hitsMax && object.structureType != STRUCTURE_WALL
 			});
-			repair_targets.sort((a,b) => a.hits - b.hits);
+			repair_targets.sort((a,b) => (a.hits/a.hitsMax) - (b.hits/b.hitsMax));
 
 			if (creep.memory.repairing && creep.memory.repair_structID) {
 				if (Game.getObjectById(creep.memory.repair_structID).hits > Game.getObjectById(creep.memory.repair_structID).hitsMax/4) {
