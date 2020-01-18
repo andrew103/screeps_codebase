@@ -1,5 +1,41 @@
 var roleBuilder = {
 
+	/**
+	 * @param {Structure} a
+	 * @param {Structure} b
+	 * 
+	 * @return {int} result
+	 */
+	prioritize_decay_repair: function(a, b) {
+		var result;
+
+		if (a.structureType == STRUCTURE_CONTAINER) {
+			var a_decays_remaining = a.hits
+		}
+		else if (a.structureType == STRUCTURE_RAMPART) {
+
+		}
+		else { // a.structureType == STRUCTURE_ROAD
+
+		}
+
+		if (b.structureType == STRUCTURE_CONTAINER) {
+
+		}
+		else if (b.structureType == STRUCTURE_RAMPART) {
+
+		}
+		else { // b.structureType == STRUCTURE_ROAD
+
+		}
+
+		var a_decays_remaining;
+		var b_decays_remaining;
+
+		var result = 'test';
+		return result;
+	},
+
     /** @param {Creep} creep **/
     run: function(creep) {
 
@@ -23,21 +59,35 @@ var roleBuilder = {
 		
 	    if (creep.memory.building) {
 			var build_targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-			var repair_targets = creep.room.find(FIND_STRUCTURES, {
+			var decay_repair = creep.room.find(FIND_STRUCTURES, {
+				filter: object => object.hits < object.hitsMax && (
+					object.structureType == STRUCTURE_CONTAINER ||
+					object.structureType == STRUCTURE_ROAD ||
+					object.structureType == STRUCTURE_RAMPART
+				)
+			});
+			var normal_repair = creep.room.find(FIND_STRUCTURES, {
 				filter: object => object.hits < object.hitsMax && object.structureType != STRUCTURE_WALL
 			});
-			repair_targets.sort((a,b) => (a.hits/a.hitsMax) - (b.hits/b.hitsMax));
 
-			if (creep.memory.repairing && creep.memory.repair_structID) {
+			decay_repair.sort((a,b) => this.prioritize_decay_repair(a, b));
+			normal_repair.sort((a,b) => (a.hits/a.hitsMax) - (b.hits/b.hitsMax));
+
+			if (creep.memory.repairing && creep.memory.repair_structID && build_targets.length) {
 				if (Game.getObjectById(creep.memory.repair_structID).hits > Game.getObjectById(creep.memory.repair_structID).hitsMax/4) {
 					creep.memory.repairing = false;
 					creep.say('stop repairing');	
 				}
 			}
-			if ((!creep.memory.repairing && repair_targets[0].hits < repair_targets[0].hitsMax/10) || !build_targets.length) {
+			if (!creep.memory.repairing && decay_repair[0].hits < decay_repair[0].hitsMax/10) {
 				creep.memory.repairing = true;
-				creep.memory.repair_structID = repair_targets[0].id;
-				creep.say('repairing 1');
+				creep.memory.repair_structID = decay_repair[0].id;
+				creep.say('repairing decay');
+			}
+			else if ((!creep.memory.repairing && normal_repair[0].hits < normal_targets[0].hitsMax) || !build_targets.length) {
+				creep.memory.repairing = true;
+				creep.memory.repair_structID = normal_repair[0].id;
+				creep.say('repairing normal');
 			}
 
 			if(build_targets.length && !creep.memory.repairing) {
@@ -45,7 +95,7 @@ var roleBuilder = {
                     creep.moveTo(build_targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
 			}
-			else if (repair_targets.length) {
+			else if (decay_repair.length || normal_repair.length) {
 				if(creep.repair(Game.getObjectById(creep.memory.repair_structID)) == ERR_NOT_IN_RANGE) {
 					creep.moveTo(Game.getObjectById(creep.memory.repair_structID), {visualizePathStyle: {stroke: '#ffffff'}});
 				}	
