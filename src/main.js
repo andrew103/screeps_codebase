@@ -21,18 +21,18 @@ module.exports.loop = function () {
     var energy_couriers = _.filter(Game.creeps, (creep) => creep.memory.role == 'energy_courier');
     // console.log('Harvesters: ' + harvesters.length);
 
+    if (energy_couriers.length < 3) {
+        var newName = 'Energy_Courier' + Game.time;
+        // console.log('Spawning new harvester: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([CARRY,CARRY,MOVE,MOVE], newName, 
+            {memory: {role: 'energy_courier'}});    
+    }
+
     if(harvesters.length < 3) {
         var newName = 'Harvester' + Game.time;
         // console.log('Spawning new harvester: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK,WORK,WORK,CARRY,CARRY,MOVE,MOVE,MOVE], newName, 
             {memory: {role: 'harvester'}});
-    }
-
-    else if (energy_couriers.length < 3) {
-        var newName = 'Energy_Courier' + Game.time;
-        // console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([CARRY,CARRY,MOVE,MOVE], newName, 
-            {memory: {role: 'energy_courier'}});    
     }
     
     else if(upgraders.length < 4) {

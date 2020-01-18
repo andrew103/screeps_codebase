@@ -8,31 +8,60 @@ var roleBuilder = {
 	 */
 	prioritize_decay_repair: function(a, b) {
 		var result;
+		var a_ticks_to_EOL;
+		var b_ticks_to_EOL;
 
 		if (a.structureType == STRUCTURE_CONTAINER) {
-			var a_decays_remaining = a.hits
+			a_ticks_to_EOL = (a.hits/CONTAINER_DECAY)*CONTAINER_DECAY_TIME_OWNED + a.ticksToDecay;
 		}
 		else if (a.structureType == STRUCTURE_RAMPART) {
-
+			a_ticks_to_EOL = (a.hits/RAMPART_DECAY_AMOUNT)*RAMPART_DECAY_TIME + a.ticksToDecay;
 		}
 		else { // a.structureType == STRUCTURE_ROAD
-
+			const terrain = a.room.getTerrain();
+			switch (terrain.get(a.pos.x, a.pos.y)) {
+				case TERRAIN_MASK_WALL:
+					var decay_amount = ROAD_DECAY_AMOUNT*CONSTRUCTION_COST_ROAD_WALL_RATIO;
+					var decay_time = ROAD_DECAY_TIME*CONSTRUCTION_COST_ROAD_WALL_RATIO;
+					a_ticks_to_EOL = (a.hits/decay_amount)*decay_time + a.ticksToDecay;
+					break;
+				case TERRAIN_MASK_SWAMP:
+					var decay_amount = ROAD_DECAY_AMOUNT*CONSTRUCTION_COST_ROAD_SWAMP_RATIO;
+					var decay_time = ROAD_DECAY_TIME*CONSTRUCTION_COST_ROAD_SWAMP_RATIO;
+					a_ticks_to_EOL = (a.hits/decay_amount)*decay_time + a.ticksToDecay;
+					break;
+				case 0:
+					a_ticks_to_EOL = (a.hits/ROAD_DECAY_AMOUNT)*ROAD_DECAY_TIME + a.ticksToDecay;
+					break;
+				}
 		}
 
 		if (b.structureType == STRUCTURE_CONTAINER) {
-
+			b_ticks_to_EOL = (b.hits/CONTAINER_DECAY)*CONTAINER_DECAY_TIME_OWNED + b.ticksToDecay;
 		}
 		else if (b.structureType == STRUCTURE_RAMPART) {
-
+			b_ticks_to_EOL = (b.hits/RAMPART_DECAY_AMOUNT)*RAMPART_DECAY_TIME + b.ticksToDecay;
 		}
 		else { // b.structureType == STRUCTURE_ROAD
-
+			const terrain = b.room.getTerrain();
+			switch (terrain.get(b.pos.x, b.pos.y)) {
+				case TERRAIN_MASK_WALL:
+					var decay_amount = ROAD_DECAY_AMOUNT*CONSTRUCTION_COST_ROAD_WALL_RATIO;
+					var decay_time = ROAD_DECAY_TIME*CONSTRUCTION_COST_ROAD_WALL_RATIO;
+					b_ticks_to_EOL = (b.hits/decay_amount)*decay_time + b.ticksToDecay;
+					break;
+				case TERRAIN_MASK_SWAMP:
+					var decay_amount = ROAD_DECAY_AMOUNT*CONSTRUCTION_COST_ROAD_SWAMP_RATIO;
+					var decay_time = ROAD_DECAY_TIME*CONSTRUCTION_COST_ROAD_SWAMP_RATIO;
+					b_ticks_to_EOL = (b.hits/decay_amount)*decay_time + b.ticksToDecay;
+					break;
+				case 0:
+					b_ticks_to_EOL = (b.hits/ROAD_DECAY_AMOUNT)*ROAD_DECAY_TIME + b.ticksToDecay;
+					break;
+				}
 		}
 
-		var a_decays_remaining;
-		var b_decays_remaining;
-
-		var result = 'test';
+		var result = a_ticks_to_EOL - b_ticks_to_EOL;
 		return result;
 	},
 
@@ -60,7 +89,7 @@ var roleBuilder = {
 	    if (creep.memory.building) {
 			var build_targets = creep.room.find(FIND_CONSTRUCTION_SITES);
 			var decay_repair = creep.room.find(FIND_STRUCTURES, {
-				filter: object => object.hits < object.hitsMax && (
+				filter: object => object.hits < object.hitsMax/10 && (
 					object.structureType == STRUCTURE_CONTAINER ||
 					object.structureType == STRUCTURE_ROAD ||
 					object.structureType == STRUCTURE_RAMPART
