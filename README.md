@@ -3,6 +3,8 @@ Screeps code
 # TODO
 
 - fix parking
+- fix builder `object.hits doesn't exist` error
+- update builder repair prioritization to be based on time till structure destroyed
 - Create work zones
 - Setup prioritization for builders
 - Setup harvester parking at sources
