@@ -108,16 +108,20 @@ var roleBuilder = {
 					creep.say('stop repairing');	
 				}
 			}
-			if (!creep.memory.repairing && decay_repair[0].hits < decay_repair[0].hitsMax/10) {
-				creep.memory.repairing = true;
-				creep.memory.repair_structID = decay_repair[0].id;
-				creep.say('repairing decay');
+			if (!creep.memory.repairing && decay_repair.length) {
+				if (decay_repair[0].hits < decay_repair[0].hitsMax/10) {
+					creep.memory.repairing = true;
+					creep.memory.repair_structID = decay_repair[0].id;
+					creep.say('repairing decay');	
+				}
 			}
-			else if ((!creep.memory.repairing && normal_repair[0].hits < normal_targets[0].hitsMax) || !build_targets.length) {
-				creep.memory.repairing = true;
-				creep.memory.repair_structID = normal_repair[0].id;
-				creep.say('repairing normal');
-			}
+			else if ((!creep.memory.repairing && normal_repair.length) || !build_targets.length) {
+				if (normal_repair[0].hits < normal_repair[0].hitsMax) {
+					creep.memory.repairing = true;
+					creep.memory.repair_structID = normal_repair[0].id;
+					creep.say('repairing normal');	
+				}
+			}	
 
 			if(build_targets.length && !creep.memory.repairing) {
                 if(creep.build(build_targets[0]) == ERR_NOT_IN_RANGE) {
